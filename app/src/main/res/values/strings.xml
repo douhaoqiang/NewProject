@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">新名称</string>
+    <string name="client_app_name">客户名称</string>
+    <string name="company_app_name">公司名称</string>
+</resources>

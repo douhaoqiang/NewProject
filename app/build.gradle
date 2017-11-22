@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+
+
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.dhq.newproject"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        flavorDimensions "release"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("../keystore.jks")
+            storePassword "abcdabcd"
+            keyAlias "wiipu"
+            keyPassword "abcdabcd"
+        }
+    }
+
+
+    buildTypes {
+
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "API_URL", "\"http://test.example.com/api\""
+            buildConfigField "boolean", "LOG_HTTP_CALLS", "true"
+
+        }
+
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "API_URL", "\"http://example.com/api\""
+            buildConfigField "boolean", "LOG_HTTP_CALLS", "false"
+//            resValue "string", "compancy_app_name", "Example"// 注意，这里是添加，在 string.xml 不能有这个字段，会重名！！！
+
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        def fileName = "${variant.productFlavors[0].name}-V${defaultConfig.versionName}.apk"
+//                        output.outputFile = new File(outputFile.parent, fileName)
+                        outputFileName = fileName
+                    }
+                }
+            }
+        }
+
+    }
+
+    productFlavors {
+        client {
+            dimension "release"
+            manifestPlaceholders = [app_icon: "@mipmap/ic_launcher_round", app_name: "@string/client_app_name"]
+
+        }
+        company {
+            dimension "release"
+            manifestPlaceholders = [app_icon: "@mipmap/company_ic_launcher", app_name: "@string/company_app_name"]
+        }
+    }
+
+}
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+}
+
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
